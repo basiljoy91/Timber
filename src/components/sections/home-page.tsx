@@ -9,6 +9,8 @@ import {
   Armchair,
   ArrowRight,
   BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
   CirclePlay,
   LampFloor,
   Search,
@@ -18,11 +20,14 @@ import {
 } from "lucide-react";
 import { FooterChipLink } from "@/components/ui/footer-chip-link";
 import {
+  discoveryTabs,
+  discoveryTiles,
   featuredProducts,
   heroChips,
   navItems,
   productCategories,
-  roomHotspots,
+  promoMoments,
+  roomSlides,
   roomShowcase,
   studioStats,
   testimonials,
@@ -43,6 +48,7 @@ export function HomePage() {
   const pageRef = useRef<HTMLElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
   const [showLoader, setShowLoader] = useState(true);
+  const [currentRoomSlide, setCurrentRoomSlide] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Chair");
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
   const filteredProducts = featuredProducts.filter(
@@ -55,6 +61,7 @@ export function HomePage() {
   const hookProducts = featuredProducts.filter((product) =>
     ["atelier-sofa", "forma-chair", "mori-lamp"].includes(product.id),
   );
+  const activeRoomSlide = roomSlides[currentRoomSlide];
 
   useEffect(() => {
     const reduceMotion = window.matchMedia(
@@ -66,6 +73,19 @@ export function HomePage() {
     );
 
     return () => window.clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) return;
+
+    const interval = window.setInterval(() => {
+      setCurrentRoomSlide((index) => (index + 1) % roomSlides.length);
+    }, 4200);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   useGSAP(
@@ -995,17 +1015,17 @@ export function HomePage() {
         <div className="scrub-media glass-panel mt-10 overflow-hidden rounded-[40px] p-4 lg:p-6">
           <div className="relative h-[34rem] overflow-hidden rounded-[32px]">
             <Image
-              src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80"
-              alt="Warm premium room inspiration interior"
+              src={activeRoomSlide.image}
+              alt={activeRoomSlide.title}
               fill
               sizes="(min-width: 1024px) 84rem, 100vw"
-              className="object-cover"
+              className="object-cover transition-opacity duration-700"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.16)_44%,rgba(0,0,0,0.28)_100%)]" />
 
-            {roomHotspots.map((hotspot) => (
+            {activeRoomSlide.hotspots.map((hotspot) => (
               <div
-                key={hotspot.name}
+                key={`${activeRoomSlide.label}-${hotspot.name}`}
                 className="hotspot-anchor absolute"
                 style={{ top: hotspot.top, left: hotspot.left }}
               >
@@ -1025,11 +1045,53 @@ export function HomePage() {
 
             <div className="absolute left-6 top-6 max-w-sm rounded-[28px] bg-white/16 px-5 py-5 text-white backdrop-blur">
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/72">
-                Editor&apos;s Room
+                {activeRoomSlide.label}
               </div>
               <h3 className="mt-3 font-display text-3xl font-semibold tracking-[-0.04em]">
-                Soft architecture, warm materials, and intentional negative space.
+                {activeRoomSlide.title}
               </h3>
+            </div>
+
+            <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2 rounded-full bg-white/14 px-3 py-2 backdrop-blur-sm">
+                {roomSlides.map((slide, index) => (
+                  <button
+                    key={slide.label}
+                    type="button"
+                    aria-label={`Go to ${slide.label}`}
+                    onClick={() => setCurrentRoomSlide(index)}
+                    className={`h-2.5 rounded-full transition-all duration-300 ${
+                      currentRoomSlide === index
+                        ? "w-8 bg-white"
+                        : "w-2.5 bg-white/45 hover:bg-white/70"
+                    }`}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  aria-label="Previous room"
+                  onClick={() =>
+                    setCurrentRoomSlide(
+                      (currentRoomSlide - 1 + roomSlides.length) % roomSlides.length,
+                    )
+                  }
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/18 bg-white/12 text-white backdrop-blur-sm"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next room"
+                  onClick={() =>
+                    setCurrentRoomSlide((currentRoomSlide + 1) % roomSlides.length)
+                  }
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/18 bg-white/12 text-white backdrop-blur-sm"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -1135,6 +1197,69 @@ export function HomePage() {
       </section>
 
       <section id="products" className="scrub-section premium-glow section-transition section-shell py-14">
+        <div className="scrub-media mb-8 overflow-hidden rounded-[32px] border border-[#214f49]/10 bg-[#214f49] text-white shadow-[0_20px_60px_rgba(22,53,49,0.22)]">
+          <div className="grid gap-4 px-6 py-4 text-sm font-semibold lg:grid-cols-[1.2fr_1fr_1fr] lg:px-8">
+            {promoMoments.map((item) => (
+              <div
+                key={item}
+                className="flex items-center justify-center border-white/10 text-center tracking-[0.02em] lg:border-r last:lg:border-r-0"
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="scrub-media glass-panel mb-10 rounded-[36px] p-5 lg:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl">
+              <span className="eyebrow">Shop By Category</span>
+              <h2 className="mt-4 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+                Discover the catalog in a cleaner way.
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {discoveryTabs.map((tab, index) => (
+                <button
+                  key={tab}
+                  type="button"
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                    index === 0
+                      ? "border border-brand/25 bg-brand-soft text-ink shadow-[0_10px_24px_rgba(201,133,67,0.18)]"
+                      : "border border-white/70 bg-white/78 text-soft-ink hover:-translate-y-0.5 hover:bg-white"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {discoveryTiles.map((tile) => (
+              <article
+                key={tile.title}
+                className="group overflow-hidden rounded-[28px] border border-white/70 bg-white/76 shadow-[0_16px_36px_rgba(42,28,13,0.08)]"
+              >
+                <div className="relative h-52 overflow-hidden bg-[#f4ecdf]">
+                  <Image
+                    src={tile.image}
+                    alt={tile.title}
+                    fill
+                    sizes="(min-width: 1280px) 22vw, (min-width: 640px) 48vw, 100vw"
+                    className="hover-pan object-cover"
+                  />
+                </div>
+                <div className="px-5 py-4">
+                  <h3 className="font-display text-xl font-semibold tracking-[-0.04em] text-ink">
+                    {tile.title}
+                  </h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-xl">
             <span className="eyebrow">Best Selling Products</span>

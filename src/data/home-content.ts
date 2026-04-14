@@ -100,6 +100,64 @@ export const featuredCategories = [
   },
 ];
 
+export const discoveryTabs = [
+  "Living Room",
+  "Bedroom",
+  "Dining Room",
+  "Lighting",
+  "Storage",
+  "Decor",
+];
+
+export const discoveryTiles = [
+  {
+    title: "Statement Sofas",
+    image:
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Centre Tables",
+    image:
+      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Lounge Chairs",
+    image:
+      "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Warm Beds",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Pendant Lights",
+    image:
+      "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Sideboards",
+    image:
+      "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Accent Corners",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Modern Decor",
+    image:
+      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=900&q=80",
+  },
+];
+
+export const promoMoments = [
+  "Extra 15% off on warm neutrals",
+  "Free styling consult on orders above $1,200",
+  "7-day easy returns on selected pieces",
+];
+
 export const featuredProducts = [
   {
     id: "aalto-sofa",
@@ -248,24 +306,110 @@ export const roomShowcase = [
   },
 ];
 
-export const roomHotspots = [
+export const roomSlides = [
   {
-    name: "Aalto Sofa",
-    price: "$1,260",
-    top: "64%",
-    left: "28%",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80",
+    label: "Editor's Room",
+    title: "Soft architecture, warm materials, and intentional negative space.",
+    hotspots: [
+      {
+        name: "Aalto Sofa",
+        price: "$1,260",
+        top: "64%",
+        left: "28%",
+      },
+      {
+        name: "Solis Table",
+        price: "$610",
+        top: "74%",
+        left: "55%",
+      },
+      {
+        name: "Halo Lamp",
+        price: "$290",
+        top: "30%",
+        left: "76%",
+      },
+    ],
   },
   {
-    name: "Solis Table",
-    price: "$610",
-    top: "74%",
-    left: "55%",
+    image:
+      "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1600&q=80",
+    label: "Studio Loft",
+    title: "Layered seating, warm light, and sculpted pieces that ground the room.",
+    hotspots: [
+      {
+        name: "Atelier Sofa",
+        price: "$1,540",
+        top: "68%",
+        left: "34%",
+      },
+      {
+        name: "Forma Chair",
+        price: "$420",
+        top: "63%",
+        left: "73%",
+      },
+      {
+        name: "Mori Lamp",
+        price: "$240",
+        top: "28%",
+        left: "80%",
+      },
+    ],
   },
   {
-    name: "Halo Lamp",
-    price: "$290",
-    top: "30%",
-    left: "76%",
+    image:
+      "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80",
+    label: "Quiet Corner",
+    title: "Collected accents and softer corners for slower, more premium browsing.",
+    hotspots: [
+      {
+        name: "Serra Lounge",
+        price: "$560",
+        top: "63%",
+        left: "27%",
+      },
+      {
+        name: "Vela Lamp",
+        price: "$340",
+        top: "25%",
+        left: "69%",
+      },
+      {
+        name: "Solis Console",
+        price: "$610",
+        top: "78%",
+        left: "55%",
+      },
+    ],
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&w=1600&q=80",
+    label: "Dining Scene",
+    title: "Wood tones, gallery walls, and dining pieces styled with restraint.",
+    hotspots: [
+      {
+        name: "Luma Chair",
+        price: "$390",
+        top: "64%",
+        left: "29%",
+      },
+      {
+        name: "Solis Console",
+        price: "$610",
+        top: "68%",
+        left: "60%",
+      },
+      {
+        name: "Pendant Lights",
+        price: "$340",
+        top: "18%",
+        left: "52%",
+      },
+    ],
   },
 ];
 
