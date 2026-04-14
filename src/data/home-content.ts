@@ -35,6 +35,33 @@ export const whyChooseUs = [
   },
 ];
 
+export const valueProps = [
+  {
+    title: "Curated silhouettes",
+    description:
+      "A tighter edit of shapes and finishes keeps the showroom feeling premium, not crowded.",
+    icon: "armchair",
+  },
+  {
+    title: "Material warmth",
+    description:
+      "Oak, suede, linen, and smoked metal tones create a consistent emotional palette across the page.",
+    icon: "lamp",
+  },
+  {
+    title: "Frictionless discovery",
+    description:
+      "The layout balances editorial storytelling with quick scanning, filtering, and product focus.",
+    icon: "badge",
+  },
+  {
+    title: "Motion with taste",
+    description:
+      "The page moves with confidence, but the products stay the hero of every interaction.",
+    icon: "sparkles",
+  },
+];
+
 export const featuredCategories = [
   {
     title: "Lounge Statements",
@@ -61,34 +88,98 @@ export const featuredCategories = [
 
 export const featuredProducts = [
   {
+    id: "aalto-sofa",
     name: "Aalto Sofa",
+    type: "Sofa",
     category: "Signature sofa",
     price: "$1,260",
+    rating: "4.9",
     image:
       "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=900&q=80",
   },
   {
+    id: "forma-chair",
     name: "Forma Chair",
+    type: "Chair",
     category: "Accent chair",
     price: "$420",
+    rating: "4.8",
     image:
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
   },
   {
+    id: "linea-table",
     name: "Linea Table",
-    category: "Dining table",
+    type: "Beds",
+    category: "Platform bed",
     price: "$880",
+    rating: "4.7",
     image:
-      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
   },
   {
+    id: "halo-lamp",
     name: "Halo Lamp",
+    type: "Lamp",
     category: "Floor lighting",
     price: "$290",
+    rating: "4.8",
     image:
       "https://images.unsplash.com/photo-1549187774-b4e9b0445b41?auto=format&fit=crop&w=900&q=80",
   },
+  {
+    id: "serra-chair",
+    name: "Serra Lounge",
+    type: "Chair",
+    category: "Lounge chair",
+    price: "$560",
+    rating: "5.0",
+    image:
+      "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "cove-sofa",
+    name: "Cove Modular",
+    type: "Sofa",
+    category: "Modular sofa",
+    price: "$1,480",
+    rating: "4.9",
+    image:
+      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "noctis-bed",
+    name: "Noctis Bed",
+    type: "Beds",
+    category: "Upholstered bed",
+    price: "$1,120",
+    rating: "4.7",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "vela-lamp",
+    name: "Vela Lamp",
+    type: "Lamp",
+    category: "Ambient lamp",
+    price: "$340",
+    rating: "4.8",
+    image:
+      "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "solis-table",
+    name: "Solis Table",
+    type: "Sofa",
+    category: "Coffee table",
+    price: "$610",
+    rating: "4.6",
+    image:
+      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=900&q=80",
+  },
 ];
+
+export const productCategories = ["Chair", "Beds", "Sofa", "Lamp"];
 
 export const roomShowcase = [
   {
@@ -100,6 +191,27 @@ export const roomShowcase = [
     title: "Scroll scenes with purpose",
     description:
       "Reserve the biggest motion for transitions between product, lifestyle, and trust-building sections.",
+  },
+];
+
+export const roomHotspots = [
+  {
+    name: "Aalto Sofa",
+    price: "$1,260",
+    top: "64%",
+    left: "28%",
+  },
+  {
+    name: "Solis Table",
+    price: "$610",
+    top: "74%",
+    left: "55%",
+  },
+  {
+    name: "Halo Lamp",
+    price: "$290",
+    top: "30%",
+    left: "76%",
   },
 ];
 

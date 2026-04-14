@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import {
   Armchair,
@@ -21,13 +22,14 @@ import {
   featuredProducts,
   heroChips,
   navItems,
+  productCategories,
   roomShowcase,
   studioStats,
   testimonials,
   whyChooseUs,
 } from "@/data/home-content";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const heroHeadlineLines = [
   "Make your interior feel",
@@ -37,6 +39,15 @@ const heroHeadlineLines = [
 
 export function HomePage() {
   const heroRef = useRef<HTMLElement | null>(null);
+  const [activeCategory, setActiveCategory] = useState("Chair");
+  const [activeProductId, setActiveProductId] = useState<string | null>(null);
+  const filteredProducts = featuredProducts.filter(
+    (product) => product.type === activeCategory,
+  );
+  const activeProduct = filteredProducts.find(
+    (product) => product.id === activeProductId,
+  );
+  const spotlightProductId = activeProduct?.id ?? filteredProducts[0]?.id ?? null;
 
   useGSAP(
     () => {
@@ -175,6 +186,214 @@ export function HomePage() {
         yoyo: true,
         ease: "sine.inOut",
       });
+
+      ScrollTrigger.matchMedia({
+        "(min-width: 1024px)": () => {
+          const heroPin = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".hero-stage",
+              start: "top top",
+              end: "+=140%",
+              scrub: 1,
+              pin: true,
+            },
+          });
+
+          heroPin
+            .to(".hero-mockup", {
+              y: -32,
+              rotate: -12,
+            })
+            .to(
+              ".hero-backdrop-card",
+              {
+                y: -64,
+                rotate: 8,
+              },
+              0,
+            )
+            .to(
+              ".hero-sofa",
+              {
+                scale: 1.12,
+                yPercent: -4,
+              },
+              0,
+            )
+            .to(
+              ".hero-plant",
+              {
+                y: -110,
+                x: 24,
+              },
+              0,
+            )
+            .to(
+              ".hero-shape-left",
+              {
+                y: -70,
+                x: -18,
+              },
+              0,
+            )
+            .to(
+              ".hero-shape-right",
+              {
+                y: -95,
+                x: 22,
+              },
+              0,
+            )
+            .to(
+              ".hero-float-card-right",
+              {
+                y: -56,
+                x: 40,
+              },
+              0,
+            )
+            .to(
+              ".hero-float-card-left",
+              {
+                y: 48,
+                x: -18,
+              },
+              0,
+            )
+            .to(
+              ".hero-float-pill",
+              {
+                y: -42,
+                x: 14,
+              },
+              0,
+            );
+
+          const categoryPanels = gsap.utils.toArray<HTMLElement>(".category-panel");
+          if (categoryPanels.length > 1) {
+            gsap.to(categoryPanels, {
+              xPercent: -100 * (categoryPanels.length - 1),
+              ease: "none",
+              scrollTrigger: {
+                trigger: ".categories-pin",
+                start: "top top",
+                end: () => `+=${window.innerWidth * (categoryPanels.length - 1)}`,
+                pin: true,
+                scrub: 1,
+                snap: 1 / (categoryPanels.length - 1),
+                invalidateOnRefresh: true,
+              },
+            });
+          }
+        },
+      });
+
+      gsap.to(".parallax-slow", {
+        yPercent: -14,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero-stage",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(".parallax-fast", {
+        yPercent: -24,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero-stage",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.utils.toArray<HTMLElement>(".scrub-section").forEach((section) => {
+        const heading = section.querySelector(".scrub-heading");
+        const copy = section.querySelector(".scrub-copy");
+        const media = section.querySelector(".scrub-media");
+
+        if (heading) {
+          gsap.fromTo(
+            heading,
+            { y: 36, opacity: 0.18 },
+            {
+              y: 0,
+              opacity: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 78%",
+                end: "top 22%",
+                scrub: true,
+              },
+            },
+          );
+        }
+
+        if (copy) {
+          gsap.fromTo(
+            copy,
+            { y: 28, opacity: 0.15 },
+            {
+              y: 0,
+              opacity: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 75%",
+                end: "top 28%",
+                scrub: true,
+              },
+            },
+          );
+        }
+
+        if (media) {
+          gsap.fromTo(
+            media,
+            { y: 42, scale: 0.94, opacity: 0.28 },
+            {
+              y: 0,
+              scale: 1,
+              opacity: 1,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 80%",
+                end: "top 18%",
+                scrub: true,
+              },
+            },
+          );
+        }
+      });
+
+      gsap.utils.toArray<HTMLElement>(".product-card").forEach((card, index) => {
+        gsap.fromTo(
+          card,
+          {
+            y: 56,
+            scale: 0.92,
+            opacity: 0.22,
+          },
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 0.9,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 84%",
+              toggleActions: "play none none reverse",
+            },
+            delay: index * 0.04,
+          },
+        );
+      });
     },
     { scope: heroRef },
   );
@@ -219,7 +438,7 @@ export function HomePage() {
 
       <section
         ref={heroRef}
-        className="section-shell relative grid items-center gap-14 pb-20 pt-6 lg:grid-cols-[0.92fr_1.08fr] lg:pb-28 lg:pt-10"
+        className="hero-stage section-shell relative grid items-center gap-14 pb-20 pt-6 lg:grid-cols-[0.92fr_1.08fr] lg:pb-28 lg:pt-10"
       >
         <div className="max-w-2xl">
           <div>
@@ -287,6 +506,8 @@ export function HomePage() {
         </div>
 
         <div className="relative h-[700px] lg:h-[760px]">
+          <div className="hero-shape-left parallax-slow absolute left-10 top-6 hidden h-32 w-32 rounded-full bg-[radial-gradient(circle,_rgba(201,133,67,0.26)_0%,rgba(201,133,67,0)_72%)] lg:block" />
+          <div className="hero-shape-right parallax-fast absolute bottom-24 right-4 hidden h-40 w-40 rounded-full bg-[radial-gradient(circle,_rgba(255,255,255,0.7)_0%,rgba(255,255,255,0)_72%)] lg:block" />
           <div className="hero-backdrop-card glass-panel absolute inset-y-14 left-0 hidden w-[72%] rounded-[40px] rotate-6 lg:block" />
 
           <div className="hero-mockup absolute right-0 top-10 w-full max-w-[640px] origin-bottom-left rounded-[42px] border border-white/65 bg-[#17181b] p-6 text-white shadow-[0_40px_110px_rgba(26,18,10,0.22)] [transform:rotate(-8deg)]">
@@ -333,6 +554,15 @@ export function HomePage() {
                 />
               </div>
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.10)_0%,rgba(0,0,0,0.04)_38%,rgba(0,0,0,0.34)_100%)]" />
+              <div className="hero-plant parallax-fast absolute bottom-6 right-4 hidden h-44 w-28 overflow-hidden rounded-[28px] border border-white/12 bg-[#1f211f] shadow-[0_20px_40px_rgba(0,0,0,0.2)] md:block">
+                <Image
+                  src="https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=600&q=80"
+                  alt="Indoor plant in a warm styled space"
+                  fill
+                  sizes="112px"
+                  className="object-cover"
+                />
+              </div>
               <div className="absolute bottom-5 left-5 rounded-[22px] bg-white/14 px-4 py-3 backdrop-blur">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/58">
                   Featured
@@ -363,7 +593,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <article className="hero-float hero-float-card glass-panel absolute right-6 top-0 w-48 rounded-[30px] p-4">
+          <article className="hero-float hero-float-card hero-float-card-right parallax-fast glass-panel absolute right-6 top-0 w-48 rounded-[30px] p-4">
             <div className="relative h-32 overflow-hidden rounded-[24px]">
               <Image
                 src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
@@ -390,7 +620,7 @@ export function HomePage() {
             </div>
           </article>
 
-          <article className="hero-float hero-float-card glass-panel absolute -left-2 bottom-16 max-w-[220px] rounded-[30px] p-5">
+          <article className="hero-float hero-float-card hero-float-card-left parallax-slow glass-panel absolute -left-2 bottom-16 max-w-[220px] rounded-[30px] p-5">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-ink">
               <BadgeCheck className="h-6 w-6" />
             </span>
@@ -412,18 +642,18 @@ export function HomePage() {
 
       <section
         id="about"
-        className="section-shell pb-8"
+        className="scrub-section section-shell pb-8"
       >
         <div className="glass-panel rounded-[40px] px-7 py-8 lg:px-12 lg:py-12">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <span className="eyebrow">Why Timber Works</span>
-              <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+              <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
                 A premium landing page needs contrast, calm, and one strong idea
                 per scroll moment.
               </h2>
             </div>
-            <p className="max-w-lg text-base leading-7 text-soft-ink">
+            <p className="scrub-copy max-w-lg text-base leading-7 text-soft-ink">
               This foundation keeps the page airy and editorial so the future
               GSAP timelines have room to breathe instead of fighting clutter.
             </p>
@@ -450,25 +680,26 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="categories" className="section-shell py-14">
+      <section id="categories" className="scrub-section section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <span className="eyebrow">Featured Categories</span>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+            <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
               Build sections as curated rooms, not generic ecommerce rows.
             </h2>
           </div>
-          <p className="max-w-lg text-base leading-7 text-soft-ink">
+          <p className="scrub-copy max-w-lg text-base leading-7 text-soft-ink">
             Each collection card can expand into a richer scroll scene with
             parallax products, hotspot details, and pinned storytelling.
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="categories-pin mt-10">
+          <div className="grid gap-6 lg:flex lg:gap-8">
           {featuredCategories.map((collection) => (
             <article
               key={collection.title}
-              className="group glass-panel overflow-hidden rounded-[34px]"
+              className="category-panel group scrub-media glass-panel overflow-hidden rounded-[34px] lg:min-h-[34rem] lg:w-[34rem] lg:min-w-[34rem] lg:flex-none"
             >
               <div className="relative h-80 overflow-hidden">
                 <Image
@@ -500,57 +731,117 @@ export function HomePage() {
               </div>
             </article>
           ))}
+          </div>
         </div>
       </section>
 
-      <section id="products" className="section-shell py-14">
+      <section id="products" className="scrub-section section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <span className="eyebrow">Best Selling Products</span>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+            <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
               Product cards should feel tactile, quick to scan, and confident on
               hover.
             </h2>
           </div>
           <div className="flex flex-wrap gap-3">
-            {["Chair", "Beds", "Sofa", "Lamp"].map((tab, index) => (
-              <span
+            {productCategories.map((tab) => (
+              <button
                 key={tab}
-                className={`rounded-full px-4 py-2 text-sm font-medium ${
-                  index === 0
-                    ? "bg-ink text-white"
-                    : "border border-white/70 bg-white/72 text-soft-ink"
+                type="button"
+                onClick={() => {
+                  setActiveCategory(tab);
+                  setActiveProductId(null);
+                }}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                  activeCategory === tab
+                    ? "bg-ink text-white shadow-[0_14px_34px_rgba(23,21,20,0.14)]"
+                    : "border border-white/70 bg-white/72 text-soft-ink hover:-translate-y-0.5 hover:bg-white"
                 }`}
               >
                 {tab}
-              </span>
+              </button>
             ))}
           </div>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {featuredProducts.map((product) => (
+          {filteredProducts.map((product) => {
+            const isSpotlight = product.id === spotlightProductId;
+
+            return (
             <article
-              key={product.name}
-              className="group glass-panel overflow-hidden rounded-[32px]"
+              key={product.id}
+              className={`product-card group relative overflow-hidden rounded-[32px] border border-white/70 bg-[rgba(255,250,244,0.82)] transition-all duration-300 ${
+                isSpotlight
+                  ? "scale-[1.02] shadow-[0_28px_70px_rgba(42,28,13,0.16)]"
+                  : "shadow-[0_18px_42px_rgba(42,28,13,0.08)]"
+              }`}
+              tabIndex={0}
+              onMouseEnter={() => setActiveProductId(product.id)}
+              onMouseLeave={() => setActiveProductId(null)}
+              onFocus={() => setActiveProductId(product.id)}
+              onBlur={() => setActiveProductId(null)}
             >
-              <div className="relative h-72 overflow-hidden bg-[#f3eadf]">
+              <div className="scrub-media relative h-72 overflow-hidden bg-[#f3eadf]">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
                   sizes="(min-width: 1280px) 22vw, (min-width: 768px) 46vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className={`object-cover transition-transform duration-700 ${
+                    isSpotlight ? "scale-110" : "group-hover:scale-105"
+                  }`}
                 />
-                <div className="absolute left-4 top-4 rounded-full bg-white/82 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-soft-ink backdrop-blur">
+                <div
+                  className={`absolute left-4 top-4 rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] backdrop-blur transition-all duration-300 ${
+                    isSpotlight
+                      ? "bg-brand text-ink shadow-[0_10px_26px_rgba(201,133,67,0.28)]"
+                      : "bg-white/82 text-soft-ink"
+                  }`}
+                >
                   {product.category}
                 </div>
+                <button
+                  type="button"
+                  className={`absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-all duration-300 ${
+                    isSpotlight
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+                  }`}
+                >
+                  Quick add
+                  <ShoppingBag className="h-4 w-4" />
+                </button>
               </div>
               <div className="px-5 py-5">
-                <div className="flex items-center gap-1 text-brand">
+                <div className="flex items-center justify-between gap-3">
+                  <div
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-2 text-sm font-semibold transition-all duration-300 ${
+                      isSpotlight
+                        ? "bg-ink text-white shadow-[0_10px_28px_rgba(23,21,20,0.18)]"
+                        : "bg-white text-brand shadow-[0_10px_24px_rgba(42,28,13,0.06)]"
+                    }`}
+                  >
+                    <Star
+                      className={`h-4 w-4 ${isSpotlight ? "fill-white text-white" : "fill-brand text-brand"}`}
+                    />
+                    {product.rating}
+                  </div>
+                  <div
+                    className={`inline-flex items-center rounded-full px-3 py-2 text-sm font-semibold transition-all duration-300 ${
+                      isSpotlight
+                        ? "bg-brand text-ink shadow-[0_10px_24px_rgba(201,133,67,0.28)]"
+                        : "bg-white text-ink shadow-[0_10px_24px_rgba(42,28,13,0.06)]"
+                    }`}
+                  >
+                    {product.price}
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-1 text-brand">
                   {Array.from({ length: 5 }).map((_, starIndex) => (
                     <Star
-                      key={`${product.name}-${starIndex}`}
+                      key={`${product.id}-${starIndex}`}
                       className="h-4 w-4 fill-brand text-brand"
                     />
                   ))}
@@ -558,9 +849,13 @@ export function HomePage() {
                 <h3 className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em] text-ink">
                   {product.name}
                 </h3>
+                <p className="mt-2 text-sm leading-7 text-soft-ink">
+                  Tailored for quiet luxury interiors, tactile layering, and
+                  warm-material styling.
+                </p>
                 <div className="mt-5 flex items-center justify-between">
-                  <span className="text-lg font-semibold text-ink">
-                    {product.price}
+                  <span className="text-sm font-medium uppercase tracking-[0.18em] text-soft-ink">
+                    Ready to ship
                   </span>
                   <button className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-[0_12px_28px_rgba(23,21,20,0.14)] hover:-translate-y-0.5 hover:bg-[#2a2827]">
                     <ShoppingBag className="h-4 w-4" />
@@ -568,14 +863,15 @@ export function HomePage() {
                 </div>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
 
-      <section id="shop" className="section-shell py-14">
+      <section id="shop" className="scrub-section section-shell py-14">
         <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
           <div
-            className="glass-panel overflow-hidden rounded-[36px] p-6"
+            className="scrub-media glass-panel overflow-hidden rounded-[36px] p-6"
           >
             <div className="relative h-[420px] overflow-hidden rounded-[30px]">
               <Image
@@ -605,10 +901,10 @@ export function HomePage() {
             className="glass-panel rounded-[36px] p-7 lg:p-9"
           >
             <span className="eyebrow">Room Showcase</span>
-            <h2 className="mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+            <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
               The next layer is scroll-driven storytelling.
             </h2>
-            <p className="mt-5 text-base leading-8 text-soft-ink">
+            <p className="scrub-copy mt-5 text-base leading-8 text-soft-ink">
               With the brand direction in place, the next pass can add pinned
               transitions, GSAP timelines, and product parallax without
               reworking the layout system.
