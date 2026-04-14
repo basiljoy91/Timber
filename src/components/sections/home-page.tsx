@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { FooterChipLink } from "@/components/ui/footer-chip-link";
 import {
-  featuredCategories,
   featuredProducts,
   heroChips,
   navItems,
@@ -43,6 +42,7 @@ const heroHeadlineLines = [
 export function HomePage() {
   const pageRef = useRef<HTMLElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
+  const [showLoader, setShowLoader] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Chair");
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
   const filteredProducts = featuredProducts.filter(
@@ -52,6 +52,21 @@ export function HomePage() {
     (product) => product.id === activeProductId,
   );
   const spotlightProductId = activeProduct?.id ?? filteredProducts[0]?.id ?? null;
+  const hookProducts = featuredProducts.filter((product) =>
+    ["atelier-sofa", "forma-chair", "mori-lamp"].includes(product.id),
+  );
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const timeout = window.setTimeout(
+      () => setShowLoader(false),
+      reduceMotion ? 120 : 820,
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   useGSAP(
     () => {
@@ -73,6 +88,12 @@ export function HomePage() {
             ".hero-mockup",
             ".hero-sofa",
             ".hero-float",
+            ".scrub-heading",
+            ".scrub-copy",
+            ".scrub-media",
+            ".value-prop",
+            ".value-prop-icon",
+            ".product-card",
           ],
           {
             clearProps: "all",
@@ -611,9 +632,38 @@ export function HomePage() {
 
   return (
     <main ref={pageRef} className="relative overflow-clip pb-24">
+      <a
+        href="#main-content"
+        className="skip-link absolute left-4 top-4 z-[70] rounded-full bg-ink px-4 py-3 text-sm font-semibold text-white"
+      >
+        Skip to content
+      </a>
+      <div
+        className={`pointer-events-none fixed inset-0 z-[60] flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(221,188,147,0.5),_rgba(248,244,238,0.98)_52%,_rgba(248,244,238,1)_100%)] transition-opacity duration-500 ${
+          showLoader ? "opacity-100" : "opacity-0"
+        }`}
+        aria-hidden="true"
+      >
+        <div className="loader-shell relative overflow-hidden rounded-[32px] border border-white/80 bg-white/72 px-8 py-7 shadow-[0_22px_64px_rgba(41,27,14,0.12)] backdrop-blur-md">
+          <div className="loader-shimmer absolute inset-0 rounded-[32px]" />
+          <div className="relative flex items-center gap-4">
+            <span className="brand-mark flex h-14 w-14 items-center justify-center rounded-full bg-ink text-xl font-black text-white">
+              T
+            </span>
+            <div>
+              <div className="font-display text-2xl font-semibold tracking-[-0.05em] text-ink">
+                Timber
+              </div>
+              <div className="text-xs uppercase tracking-[0.24em] text-soft-ink">
+                Curated interiors loading
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <header className="section-shell relative z-20 flex items-center justify-between py-6">
         <a href="#" className="hero-brand flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-lg font-black text-white shadow-[0_14px_34px_rgba(23,21,20,0.18)]">
+          <span className="brand-mark flex h-12 w-12 items-center justify-center rounded-full bg-ink text-lg font-black text-white shadow-[0_14px_34px_rgba(23,21,20,0.18)]">
             T
           </span>
           <div className="flex flex-col">
@@ -626,7 +676,10 @@ export function HomePage() {
           </div>
         </a>
 
-        <nav className="hero-nav hidden items-center gap-8 rounded-full border border-white/60 bg-white/70 px-6 py-3 text-sm text-soft-ink shadow-[0_10px_28px_rgba(44,31,19,0.06)] backdrop-blur md:flex">
+        <nav
+          aria-label="Primary"
+          className="hero-nav hidden items-center gap-8 rounded-full border border-white/60 bg-white/70 px-6 py-3 text-sm text-soft-ink shadow-[0_10px_28px_rgba(44,31,19,0.06)] backdrop-blur md:flex"
+        >
           {navItems.map((item) => (
             <a
               key={item.label}
@@ -650,8 +703,9 @@ export function HomePage() {
       </header>
 
       <section
+        id="main-content"
         ref={heroRef}
-        className="hero-stage section-shell relative grid items-center gap-14 pb-20 pt-6 lg:grid-cols-[0.92fr_1.08fr] lg:pb-28 lg:pt-10"
+        className="hero-stage section-transition section-shell relative grid items-center gap-14 pb-20 pt-6 lg:grid-cols-[0.92fr_1.08fr] lg:pb-28 lg:pt-10"
       >
         <div className="max-w-2xl">
           <div>
@@ -864,7 +918,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="value-strip section-shell pb-10">
+      <section className="value-strip section-transition section-shell pb-10">
         <div className="grid gap-4 lg:grid-cols-4">
           {valueProps.map((item) => (
             <article
@@ -887,7 +941,7 @@ export function HomePage() {
 
       <section
         id="about"
-        className="scrub-section section-shell pb-8"
+        className="scrub-section section-transition section-shell pb-8"
       >
         <div className="glass-panel rounded-[40px] px-7 py-8 lg:px-12 lg:py-12">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -925,17 +979,16 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="scrub-section premium-glow section-shell py-14">
+      <section className="scrub-section premium-glow section-transition section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
+          <div className="max-w-xl">
             <span className="eyebrow">Room Inspiration</span>
             <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
-              Let one styled room sell the mood, then let hotspots sell the pieces.
+              Shop the room.
             </h2>
           </div>
-          <p className="scrub-copy max-w-lg text-base leading-7 text-soft-ink">
-            A premium inspiration scene works best when it feels editorial first,
-            but still gives visitors precise points of product discovery.
+          <p className="scrub-copy max-w-sm text-sm leading-7 text-soft-ink">
+            One interior, three hotspots, fast product discovery.
           </p>
         </div>
 
@@ -982,68 +1035,111 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="categories" className="scrub-section premium-glow section-shell py-14">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <span className="eyebrow">Featured Categories</span>
-            <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
-              Build sections as curated rooms, not generic ecommerce rows.
-            </h2>
-          </div>
-          <p className="scrub-copy max-w-lg text-base leading-7 text-soft-ink">
-            Each collection card can expand into a richer scroll scene with
-            parallax products, hotspot details, and pinned storytelling.
-          </p>
-        </div>
-
-        <div className="categories-pin mt-10">
-          <div className="grid gap-6 lg:flex lg:gap-8">
-          {featuredCategories.map((collection) => (
-            <article
-              key={collection.title}
-              className="category-panel group scrub-media tilt-card glass-panel overflow-hidden rounded-[34px] lg:min-h-[34rem] lg:w-[34rem] lg:min-w-[34rem] lg:flex-none"
-            >
-              <div className="tilt-media relative h-80 overflow-hidden">
-                <Image
-                  src={collection.image}
-                  alt={collection.title}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, 100vw"
-                  className="hover-pan object-cover transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.12)_42%,rgba(0,0,0,0.42)_100%)]" />
+      <section id="categories" className="scrub-section premium-glow section-transition section-shell py-14">
+        <div className="grid gap-6 lg:grid-cols-[1.18fr_0.82fr]">
+          <article className="scrub-media group relative overflow-hidden rounded-[40px] bg-[#1d1916] text-white shadow-[0_28px_80px_rgba(32,21,11,0.18)]">
+            <div className="absolute inset-0">
+              <Image
+                src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1600&q=80"
+                alt="Signature furniture campaign room"
+                fill
+                sizes="(min-width: 1024px) 56vw, 100vw"
+                className="object-cover"
+                priority={false}
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(17,14,12,0.78)_0%,rgba(17,14,12,0.32)_48%,rgba(17,14,12,0.12)_100%)]" />
+            </div>
+            <div className="relative z-10 flex min-h-[32rem] flex-col justify-between p-7 lg:p-10">
+              <div className="flex flex-wrap gap-3">
+                <span className="rounded-full bg-white/12 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-white/84 backdrop-blur-sm">
+                  Most Wanted
+                </span>
+                <span className="rounded-full bg-brand px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-ink">
+                  New Season Drop
+                </span>
               </div>
-              <div className="px-6 py-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand-soft/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink">
-                  Curated Scene
-                </div>
-                <h3 className="mt-4 font-display text-3xl font-semibold tracking-[-0.04em] text-ink">
-                  {collection.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-soft-ink">
-                  {collection.description}
+              <div className="max-w-xl">
+                <span className="text-sm font-semibold uppercase tracking-[0.28em] text-white/58">
+                  Signature Edit
+                </span>
+                <h2 className="scrub-heading mt-4 font-display text-4xl font-semibold tracking-[-0.05em] text-white sm:text-5xl lg:text-[4.4rem]">
+                  Pieces customers stop on.
+                </h2>
+                <p className="scrub-copy mt-5 max-w-md text-base leading-7 text-white/70">
+                  Sofas, chairs, and lighting styled like a premium drop.
                 </p>
-                <a
-                  href="#products"
-                  className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-ink"
-                >
-                  View category
-                  <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <a
+                    href="#products"
+                    className="magnetic-btn inline-flex items-center rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-ink shadow-[0_16px_36px_rgba(255,255,255,0.12)]"
+                  >
+                    <span className="magnetic-inner inline-flex items-center gap-2">
+                      Shop best sellers
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </a>
+                  <a
+                    href="#shop"
+                    className="inline-flex items-center rounded-full border border-white/18 px-6 py-3.5 text-sm font-semibold text-white/84 backdrop-blur-sm"
+                  >
+                    View showroom
+                  </a>
+                </div>
               </div>
-            </article>
-          ))}
+            </div>
+          </article>
+
+          <div className="grid gap-5">
+            {hookProducts.map((product) => (
+              <article
+                key={product.id}
+                className="scrub-media group tilt-card glass-panel overflow-hidden rounded-[32px]"
+              >
+                <div className="grid min-h-[10.5rem] grid-cols-[0.92fr_1.08fr]">
+                  <div className="tilt-media relative overflow-hidden">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      sizes="(min-width: 1024px) 20vw, 50vw"
+                      className="hover-pan object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-between px-5 py-5">
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-soft-ink">
+                        {product.category}
+                      </div>
+                      <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em] text-ink">
+                        {product.name}
+                      </h3>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-full bg-brand-soft px-3 py-2 text-sm font-semibold text-ink">
+                        {product.price}
+                      </span>
+                      <a
+                        href="#products"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-ink"
+                      >
+                        Shop now
+                        <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="products" className="scrub-section premium-glow section-shell py-14">
+      <section id="products" className="scrub-section premium-glow section-transition section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
+          <div className="max-w-xl">
             <span className="eyebrow">Best Selling Products</span>
             <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
-              Product cards should feel tactile, quick to scan, and confident on
-              hover.
+              More product, less copy.
             </h2>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -1065,6 +1161,39 @@ export function HomePage() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="scrub-media mt-8 grid gap-4 md:grid-cols-3">
+          {filteredProducts.slice(0, 3).map((product) => (
+            <article
+              key={`${product.id}-feature`}
+              className="group relative overflow-hidden rounded-[30px] border border-white/70 bg-white/70 shadow-[0_18px_42px_rgba(42,28,13,0.08)]"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="hover-pan object-cover"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_20%,rgba(0,0,0,0.38)_100%)]" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-5 text-white">
+                  <div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
+                      {product.category}
+                    </div>
+                    <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-0.04em]">
+                      {product.name}
+                    </h3>
+                  </div>
+                  <div className="rounded-full bg-white/14 px-4 py-2 text-sm font-semibold backdrop-blur-sm">
+                    {product.price}
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -1151,13 +1280,9 @@ export function HomePage() {
                 <h3 className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em] text-ink">
                   {product.name}
                 </h3>
-                <p className="mt-2 text-sm leading-7 text-soft-ink">
-                  Tailored for quiet luxury interiors, tactile layering, and
-                  warm-material styling.
-                </p>
                 <div className="mt-5 flex items-center justify-between">
-                  <span className="text-sm font-medium uppercase tracking-[0.18em] text-soft-ink">
-                    Ready to ship
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-soft-ink">
+                    In stock
                   </span>
                   <button className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-ink text-white shadow-[0_12px_28px_rgba(23,21,20,0.14)] hover:-translate-y-0.5 hover:bg-[#2a2827]">
                     <ShoppingBag className="h-4 w-4" />
@@ -1170,7 +1295,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="shop" className="scrub-section premium-glow section-shell py-14">
+      <section id="shop" className="scrub-section premium-glow section-transition section-shell py-14">
         <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
           <div
             className="scrub-media glass-panel overflow-hidden rounded-[36px] p-6"
@@ -1230,7 +1355,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="section-shell py-14">
+      <section className="section-transition section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <span className="eyebrow">Testimonials</span>
@@ -1274,7 +1399,7 @@ export function HomePage() {
 
       <section
         id="contact"
-        className="premium-glow section-shell pt-10"
+        className="premium-glow section-transition section-shell pt-12"
       >
         <div className="rounded-[40px] bg-ink px-7 py-10 text-white shadow-[0_32px_90px_rgba(23,21,20,0.18)] lg:px-12 lg:py-12">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
@@ -1330,7 +1455,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <footer className="section-shell py-10">
+      <footer className="section-transition section-shell py-10">
         <div className="flex flex-col gap-6 rounded-[34px] border border-white/70 bg-white/72 px-6 py-6 shadow-[0_18px_42px_rgba(42,28,13,0.06)] backdrop-blur lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="font-display text-2xl font-semibold tracking-[-0.04em] text-ink">

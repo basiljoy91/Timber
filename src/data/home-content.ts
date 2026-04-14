@@ -64,23 +64,37 @@ export const valueProps = [
 
 export const featuredCategories = [
   {
-    title: "Lounge Statements",
-    description:
-      "Soft silhouettes, sculpted forms, and caramel upholstery for living rooms that feel collected.",
+    title: "Lounge",
+    description: "Caramel seating, sculpted forms, soft daylight.",
+    count: "28 pieces",
     image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    title: "Dining Atmosphere",
-    description:
-      "Warm wood finishes and tactile seating curated for intimate hosting and everyday comfort.",
+    title: "Dining",
+    description: "Warm oak tables and tactile hosting pieces.",
+    count: "16 pieces",
     image:
       "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&w=1200&q=80",
   },
   {
-    title: "Quiet Corners",
-    description:
-      "Accent chairs, lamps, and textured decor that turn unused edges into intentional moments.",
+    title: "Bedroom",
+    description: "Quiet layers, upholstered forms, warm neutrals.",
+    count: "19 pieces",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Lighting",
+    description: "Ambient floor lamps and soft statement glow.",
+    count: "12 pieces",
+    image:
+      "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    title: "Corners",
+    description: "Accent chairs, side tables, collected details.",
+    count: "14 pieces",
     image:
       "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
   },
@@ -108,8 +122,8 @@ export const featuredProducts = [
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=900&q=80",
   },
   {
-    id: "linea-table",
-    name: "Linea Table",
+    id: "linea-bed",
+    name: "Linea Bed",
     type: "Beds",
     category: "Platform bed",
     price: "$880",
@@ -155,7 +169,7 @@ export const featuredProducts = [
     price: "$1,120",
     rating: "4.7",
     image:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80",
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: "vela-lamp",
@@ -169,13 +183,53 @@ export const featuredProducts = [
   },
   {
     id: "solis-table",
-    name: "Solis Table",
+    name: "Solis Console",
     type: "Sofa",
     category: "Coffee table",
     price: "$610",
     rating: "4.6",
     image:
       "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "luma-chair",
+    name: "Luma Chair",
+    type: "Chair",
+    category: "Dining chair",
+    price: "$390",
+    rating: "4.8",
+    image:
+      "https://images.unsplash.com/photo-1579656381226-5fc0f0100c3b?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "mori-lamp",
+    name: "Mori Lamp",
+    type: "Lamp",
+    category: "Table lamp",
+    price: "$240",
+    rating: "4.7",
+    image:
+      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "atelier-sofa",
+    name: "Atelier Sofa",
+    type: "Sofa",
+    category: "Studio sofa",
+    price: "$1,540",
+    rating: "5.0",
+    image:
+      "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: "dune-bed",
+    name: "Dune Bed",
+    type: "Beds",
+    category: "Low profile bed",
+    price: "$1,040",
+    rating: "4.8",
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1100&q=80",
   },
 ];
 

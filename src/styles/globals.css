@@ -61,6 +61,18 @@ body {
   font-family: var(--font-manrope), sans-serif;
 }
 
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(228, 187, 142, 0.14), transparent 26%),
+    radial-gradient(circle at 82% 30%, rgba(88, 66, 40, 0.08), transparent 22%),
+    radial-gradient(circle at 48% 86%, rgba(201, 133, 67, 0.08), transparent 26%);
+  opacity: 0.95;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -84,6 +96,26 @@ button {
     box-shadow 180ms ease;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid rgba(201, 133, 67, 0.85);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(201, 133, 67, 0.16);
+}
+
+.skip-link {
+  transform: translateY(-140%);
+  transition:
+    transform var(--motion-hover-base) ease,
+    opacity var(--motion-hover-fast) ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
 ::selection {
   background: rgba(201, 133, 67, 0.22);
   color: var(--ink);
@@ -103,6 +135,20 @@ button {
   box-shadow:
     0 25px 80px rgba(53, 35, 17, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.brand-mark {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), transparent 55%);
+  pointer-events: none;
 }
 
 .chip {
@@ -173,6 +219,19 @@ button {
   opacity: 1;
 }
 
+.loader-shimmer {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 30%,
+    rgba(255, 255, 255, 0.58) 48%,
+    rgba(255, 255, 255, 0.14) 66%,
+    transparent 100%
+  );
+  transform: translateX(-135%);
+  animation: loader-shimmer 1.35s ease-in-out infinite;
+}
+
 .hover-pan {
   transition:
     transform var(--motion-page-fast) ease,
@@ -184,9 +243,45 @@ button {
   transform: scale(1.06) translate3d(0.6rem, -0.35rem, 0);
 }
 
+.section-transition {
+  position: relative;
+}
+
+.section-transition::before {
+  content: "";
+  position: absolute;
+  left: 1.5rem;
+  right: 1.5rem;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(23, 21, 20, 0.08) 18%,
+    rgba(201, 133, 67, 0.2) 50%,
+    rgba(23, 21, 20, 0.08) 82%,
+    transparent 100%
+  );
+}
+
+@keyframes loader-shimmer {
+  0% {
+    transform: translateX(-135%);
+  }
+
+  100% {
+    transform: translateX(135%);
+  }
+}
+
 @media (min-width: 1024px) {
   .section-shell {
     padding-inline: 2.5rem;
+  }
+
+  .section-transition::before {
+    left: 2.5rem;
+    right: 2.5rem;
   }
 }
 
@@ -199,5 +294,29 @@ button {
 @media (max-width: 767px) {
   .group:hover .hover-pan {
     transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .loader-shimmer,
+  .premium-glow::before,
+  .hover-pan,
+  .skip-link {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }
