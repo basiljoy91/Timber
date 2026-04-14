@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -23,11 +23,14 @@ import {
   heroChips,
   navItems,
   productCategories,
+  roomHotspots,
   roomShowcase,
   studioStats,
   testimonials,
+  valueProps,
   whyChooseUs,
 } from "@/data/home-content";
+import { motionSystem } from "@/lib/animations/motion-system";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -38,6 +41,7 @@ const heroHeadlineLines = [
 ];
 
 export function HomePage() {
+  const pageRef = useRef<HTMLElement | null>(null);
   const heroRef = useRef<HTMLElement | null>(null);
   const [activeCategory, setActiveCategory] = useState("Chair");
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
@@ -51,6 +55,7 @@ export function HomePage() {
 
   useGSAP(
     () => {
+      const cleanups: Array<() => void> = [];
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
@@ -88,7 +93,7 @@ export function HomePage() {
           opacity: 0,
           y: -20,
           stagger: 0.08,
-          duration: 0.7,
+          duration: motionSystem.pageLoad.fast,
         })
         .from(
           ".hero-line-inner",
@@ -96,7 +101,7 @@ export function HomePage() {
             yPercent: 110,
             rotate: 2,
             stagger: 0.12,
-            duration: 0.9,
+            duration: motionSystem.pageLoad.base,
           },
           "-=0.2",
         )
@@ -105,7 +110,7 @@ export function HomePage() {
           {
             opacity: 0,
             y: 26,
-            duration: 0.7,
+            duration: motionSystem.pageLoad.fast,
           },
           "-=0.42",
         )
@@ -116,7 +121,7 @@ export function HomePage() {
             scale: 0.84,
             y: 18,
             stagger: 0.08,
-            duration: 0.45,
+            duration: motionSystem.sectionReveal.fast,
           },
           "-=0.3",
         )
@@ -126,7 +131,7 @@ export function HomePage() {
             opacity: 0,
             y: 18,
             stagger: 0.08,
-            duration: 0.5,
+            duration: motionSystem.sectionReveal.fast,
           },
           "-=0.18",
         )
@@ -137,7 +142,7 @@ export function HomePage() {
             x: 54,
             y: 44,
             rotate: -1,
-            duration: 1,
+            duration: motionSystem.pageLoad.long,
           },
           "-=0.58",
         )
@@ -145,7 +150,7 @@ export function HomePage() {
           ".hero-sofa",
           {
             scale: 1.08,
-            duration: 1.15,
+            duration: motionSystem.pageLoad.long,
           },
           "-=0.75",
         )
@@ -156,7 +161,7 @@ export function HomePage() {
             y: 28,
             x: 10,
             stagger: 0.1,
-            duration: 0.7,
+            duration: motionSystem.pageLoad.fast,
           },
           "-=0.55",
         );
@@ -194,7 +199,7 @@ export function HomePage() {
               trigger: ".hero-stage",
               start: "top top",
               end: "+=140%",
-              scrub: 1,
+              scrub: motionSystem.scrub.smooth,
               pin: true,
             },
           });
@@ -279,7 +284,7 @@ export function HomePage() {
                 start: "top top",
                 end: () => `+=${window.innerWidth * (categoryPanels.length - 1)}`,
                 pin: true,
-                scrub: 1,
+                scrub: motionSystem.scrub.slow,
                 snap: 1 / (categoryPanels.length - 1),
                 invalidateOnRefresh: true,
               },
@@ -288,27 +293,29 @@ export function HomePage() {
         },
       });
 
-      gsap.to(".parallax-slow", {
-        yPercent: -14,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-stage",
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      if (!reduceMotion && window.innerWidth >= 1024) {
+        gsap.to(".parallax-slow", {
+          yPercent: -14,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: motionSystem.scrub.smooth,
+          },
+        });
 
-      gsap.to(".parallax-fast", {
-        yPercent: -24,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-stage",
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+        gsap.to(".parallax-fast", {
+          yPercent: -24,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-stage",
+            start: "top bottom",
+            end: "bottom top",
+            scrub: motionSystem.scrub.slow,
+          },
+        });
+      }
 
       gsap.utils.toArray<HTMLElement>(".scrub-section").forEach((section) => {
         const heading = section.querySelector(".scrub-heading");
@@ -327,7 +334,7 @@ export function HomePage() {
                 trigger: section,
                 start: "top 78%",
                 end: "top 22%",
-                scrub: true,
+                scrub: motionSystem.scrub.smooth,
               },
             },
           );
@@ -345,7 +352,7 @@ export function HomePage() {
                 trigger: section,
                 start: "top 75%",
                 end: "top 28%",
-                scrub: true,
+                scrub: motionSystem.scrub.smooth,
               },
             },
           );
@@ -364,7 +371,7 @@ export function HomePage() {
                 trigger: section,
                 start: "top 80%",
                 end: "top 18%",
-                scrub: true,
+                scrub: motionSystem.scrub.slow,
               },
             },
           );
@@ -383,7 +390,7 @@ export function HomePage() {
             y: 0,
             scale: 1,
             opacity: 1,
-            duration: 0.9,
+            duration: motionSystem.sectionReveal.long,
             ease: "power3.out",
             scrollTrigger: {
               trigger: card,
@@ -394,12 +401,216 @@ export function HomePage() {
           },
         );
       });
+
+      gsap.fromTo(
+        ".value-prop",
+        {
+          y: 22,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: motionSystem.sectionReveal.base,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".value-strip",
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      gsap.fromTo(
+        ".value-prop-icon",
+        {
+          y: 10,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: motionSystem.sectionReveal.fast,
+          stagger: 0.08,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".value-strip",
+            start: "top 82%",
+            toggleActions: "play none none reverse",
+          },
+        },
+      );
+
+      gsap.to(".hotspot-ring", {
+        scale: 1.6,
+        opacity: 0,
+        duration: 1.8,
+        repeat: -1,
+        ease: "power1.out",
+        stagger: 0.28,
+      });
+
+      gsap.to(".hotspot-anchor", {
+        y: -6,
+        duration: 2.4,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.22,
+      });
+
+      if (!reduceMotion) {
+        gsap.utils.toArray<HTMLElement>(".count-up").forEach((counter) => {
+          const end = Number(counter.dataset.target ?? "0");
+          const decimals = Number(counter.dataset.decimals ?? "0");
+          const suffix = counter.dataset.suffix ?? "";
+          const value = { current: 0 };
+
+          gsap.to(value, {
+            current: end,
+            duration: motionSystem.pageLoad.long,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: counter,
+              start: "top 88%",
+              once: true,
+            },
+            onUpdate: () => {
+              counter.textContent = `${value.current.toFixed(decimals)}${suffix}`;
+            },
+          });
+        });
+      }
+
+      const magneticButtons = gsap.utils.toArray<HTMLElement>(".magnetic-btn");
+      magneticButtons.forEach((button) => {
+        const inner = button.querySelector<HTMLElement>(".magnetic-inner") ?? button;
+
+        const handleMove = (event: MouseEvent) => {
+          if (window.innerWidth < 768 || reduceMotion) return;
+          const bounds = button.getBoundingClientRect();
+          const x = event.clientX - bounds.left - bounds.width / 2;
+          const y = event.clientY - bounds.top - bounds.height / 2;
+
+          gsap.to(inner, {
+            x: x * 0.18,
+            y: y * 0.22,
+            duration: motionSystem.hover.base,
+            ease: "power2.out",
+          });
+        };
+
+        const handleLeave = () => {
+          gsap.to(inner, {
+            x: 0,
+            y: 0,
+            duration: motionSystem.hover.slow,
+            ease: "power3.out",
+          });
+        };
+
+        button.addEventListener("mousemove", handleMove);
+        button.addEventListener("mouseleave", handleLeave);
+        cleanups.push(() => {
+          button.removeEventListener("mousemove", handleMove);
+          button.removeEventListener("mouseleave", handleLeave);
+        });
+      });
+
+      const tiltCards = gsap.utils.toArray<HTMLElement>(".tilt-card");
+      tiltCards.forEach((card) => {
+        const media = card.querySelector<HTMLElement>(".tilt-media") ?? card;
+
+        const handleMove = (event: MouseEvent) => {
+          if (window.innerWidth < 768 || reduceMotion) return;
+          const bounds = card.getBoundingClientRect();
+          const x = (event.clientX - bounds.left) / bounds.width;
+          const y = (event.clientY - bounds.top) / bounds.height;
+          const rotateY = (x - 0.5) * 10;
+          const rotateX = (0.5 - y) * 10;
+
+          gsap.to(card, {
+            rotateY,
+            rotateX,
+            y: -6,
+            transformPerspective: 1000,
+            transformOrigin: "center",
+            duration: motionSystem.hover.base,
+            ease: "power2.out",
+          });
+
+          gsap.to(media, {
+            x: (x - 0.5) * -12,
+            y: (y - 0.5) * -12,
+            scale: 1.06,
+            duration: motionSystem.hover.slow,
+            ease: "power2.out",
+          });
+        };
+
+        const handleLeave = () => {
+          gsap.to(card, {
+            rotateX: 0,
+            rotateY: 0,
+            y: 0,
+            duration: motionSystem.sectionReveal.fast,
+            ease: "power3.out",
+          });
+          gsap.to(media, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: motionSystem.hover.slow,
+            ease: "power3.out",
+          });
+        };
+
+        card.addEventListener("mousemove", handleMove);
+        card.addEventListener("mouseleave", handleLeave);
+        cleanups.push(() => {
+          card.removeEventListener("mousemove", handleMove);
+          card.removeEventListener("mouseleave", handleLeave);
+        });
+      });
+
+      const premiumSections = gsap.utils.toArray<HTMLElement>(".premium-glow");
+      premiumSections.forEach((section) => {
+        const handleMove = (event: MouseEvent) => {
+          const bounds = section.getBoundingClientRect();
+          section.style.setProperty("--glow-x", `${event.clientX - bounds.left}px`);
+          section.style.setProperty("--glow-y", `${event.clientY - bounds.top}px`);
+        };
+
+        const handleLeave = () => {
+          section.style.setProperty("--glow-x", "50%");
+          section.style.setProperty("--glow-y", "50%");
+        };
+
+        section.addEventListener("mousemove", handleMove);
+        section.addEventListener("mouseleave", handleLeave);
+        cleanups.push(() => {
+          section.removeEventListener("mousemove", handleMove);
+          section.removeEventListener("mouseleave", handleLeave);
+        });
+      });
+
+      return () => {
+        cleanups.forEach((cleanup) => cleanup());
+      };
     },
-    { scope: heroRef },
+    { scope: pageRef },
   );
 
+  const valuePropIcons: Record<string, ReactNode> = {
+    armchair: <Armchair className="h-5 w-5" />,
+    lamp: <LampFloor className="h-5 w-5" />,
+    badge: <BadgeCheck className="h-5 w-5" />,
+    sparkles: <Sparkles className="h-5 w-5" />,
+  };
+
   return (
-    <main className="relative overflow-clip pb-24">
+    <main ref={pageRef} className="relative overflow-clip pb-24">
       <header className="section-shell relative z-20 flex items-center justify-between py-6">
         <a href="#" className="hero-brand flex items-center gap-3">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-lg font-black text-white shadow-[0_14px_34px_rgba(23,21,20,0.18)]">
@@ -420,7 +631,7 @@ export function HomePage() {
             <a
               key={item.label}
               href={item.href}
-              className="hover:-translate-y-0.5 hover:text-ink"
+              className="nav-link hover:-translate-y-0.5 hover:text-ink"
             >
               {item.label}
             </a>
@@ -429,10 +640,12 @@ export function HomePage() {
 
         <a
           href="#products"
-          className="hero-cta hidden items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(23,21,20,0.16)] hover:-translate-y-0.5 hover:bg-[#2a2827] md:inline-flex"
+          className="hero-cta magnetic-btn hidden items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(23,21,20,0.16)] hover:-translate-y-0.5 hover:bg-[#2a2827] md:inline-flex"
         >
-          Shop now
-          <ArrowRight className="h-4 w-4" />
+          <span className="magnetic-inner inline-flex items-center gap-2">
+            Shop now
+            <ArrowRight className="h-4 w-4" />
+          </span>
         </a>
       </header>
 
@@ -468,17 +681,21 @@ export function HomePage() {
           <div className="mt-10 flex flex-wrap gap-4">
             <a
               href="#categories"
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-white shadow-[0_18px_38px_rgba(23,21,20,0.15)] hover:-translate-y-1 hover:bg-[#2a2827]"
+              className="magnetic-btn inline-flex items-center rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-white shadow-[0_18px_38px_rgba(23,21,20,0.15)] hover:-translate-y-1 hover:bg-[#2a2827]"
             >
-              Explore categories
-              <ArrowRight className="h-4 w-4" />
+              <span className="magnetic-inner inline-flex items-center gap-2">
+                Explore categories
+                <ArrowRight className="h-4 w-4" />
+              </span>
             </a>
             <a
               href="#about"
-              className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/72 px-6 py-3.5 text-sm font-semibold text-ink shadow-[0_14px_30px_rgba(42,28,13,0.08)] backdrop-blur hover:-translate-y-1 hover:bg-white"
+              className="magnetic-btn inline-flex items-center rounded-full border border-white/70 bg-white/72 px-6 py-3.5 text-sm font-semibold text-ink shadow-[0_14px_30px_rgba(42,28,13,0.08)] backdrop-blur hover:-translate-y-1 hover:bg-white"
             >
-              <CirclePlay className="h-4 w-4 text-brand" />
-              Watch the showroom
+              <span className="magnetic-inner inline-flex items-center gap-2">
+                <CirclePlay className="h-4 w-4 text-brand" />
+                Watch the showroom
+              </span>
             </a>
           </div>
 
@@ -497,7 +714,14 @@ export function HomePage() {
                 className="hero-stat glass-panel rounded-[28px] px-5 py-5"
               >
                 <div className="font-display text-3xl font-semibold tracking-[-0.04em] text-ink">
-                  {stat.value}
+                  <span
+                    className="count-up"
+                    data-target={stat.value.replace(/[^0-9.]/g, "")}
+                    data-decimals={stat.value.includes(".") ? "1" : "0"}
+                    data-suffix={stat.value.replace(/[0-9.]/g, "")}
+                  >
+                    {stat.value}
+                  </span>
                 </div>
                 <p className="mt-2 text-sm text-soft-ink">{stat.label}</p>
               </div>
@@ -510,7 +734,7 @@ export function HomePage() {
           <div className="hero-shape-right parallax-fast absolute bottom-24 right-4 hidden h-40 w-40 rounded-full bg-[radial-gradient(circle,_rgba(255,255,255,0.7)_0%,rgba(255,255,255,0)_72%)] lg:block" />
           <div className="hero-backdrop-card glass-panel absolute inset-y-14 left-0 hidden w-[72%] rounded-[40px] rotate-6 lg:block" />
 
-          <div className="hero-mockup absolute right-0 top-10 w-full max-w-[640px] origin-bottom-left rounded-[42px] border border-white/65 bg-[#17181b] p-6 text-white shadow-[0_40px_110px_rgba(26,18,10,0.22)] [transform:rotate(-8deg)]">
+          <div className="hero-mockup absolute right-0 top-10 w-full max-w-[640px] origin-bottom-left rounded-[42px] border border-white/65 bg-[#17181b] p-5 text-white shadow-[0_40px_110px_rgba(26,18,10,0.22)] sm:p-6 lg:[transform:rotate(-8deg)]">
             <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.26em] text-white/55">
               <span>Timber</span>
               <div className="hidden gap-4 md:flex">
@@ -593,7 +817,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <article className="hero-float hero-float-card hero-float-card-right parallax-fast glass-panel absolute right-6 top-0 w-48 rounded-[30px] p-4">
+          <article className="hero-float hero-float-card hero-float-card-right parallax-fast glass-panel absolute right-6 top-0 hidden w-48 rounded-[30px] p-4 lg:block">
             <div className="relative h-32 overflow-hidden rounded-[24px]">
               <Image
                 src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80"
@@ -620,7 +844,7 @@ export function HomePage() {
             </div>
           </article>
 
-          <article className="hero-float hero-float-card hero-float-card-left parallax-slow glass-panel absolute -left-2 bottom-16 max-w-[220px] rounded-[30px] p-5">
+          <article className="hero-float hero-float-card hero-float-card-left parallax-slow glass-panel absolute -left-2 bottom-16 hidden max-w-[220px] rounded-[30px] p-5 lg:block">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-soft text-ink">
               <BadgeCheck className="h-6 w-6" />
             </span>
@@ -633,10 +857,31 @@ export function HomePage() {
             </p>
           </article>
 
-          <div className="hero-float hero-float-pill absolute bottom-2 right-10 flex items-center gap-3 rounded-full border border-white/70 bg-white/76 px-5 py-3 text-sm font-medium text-ink shadow-[0_14px_30px_rgba(44,31,19,0.08)] backdrop-blur">
+          <div className="hero-float hero-float-pill absolute bottom-2 right-10 hidden items-center gap-3 rounded-full border border-white/70 bg-white/76 px-5 py-3 text-sm font-medium text-ink shadow-[0_14px_30px_rgba(44,31,19,0.08)] backdrop-blur lg:flex">
             <LampFloor className="h-4 w-4 text-brand" />
             Ambient lighting kits
           </div>
+        </div>
+      </section>
+
+      <section className="value-strip section-shell pb-10">
+        <div className="grid gap-4 lg:grid-cols-4">
+          {valueProps.map((item) => (
+            <article
+              key={item.title}
+              className="value-prop rounded-[28px] border border-white/70 bg-white/70 px-5 py-5 shadow-[0_14px_34px_rgba(42,28,13,0.06)] backdrop-blur"
+            >
+              <span className="value-prop-icon flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-soft text-ink shadow-[0_10px_24px_rgba(201,133,67,0.18)]">
+                {valuePropIcons[item.icon]}
+              </span>
+              <h3 className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em] text-ink">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-7 text-soft-ink">
+                {item.description}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -680,7 +925,64 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="categories" className="scrub-section section-shell py-14">
+      <section className="scrub-section premium-glow section-shell py-14">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <span className="eyebrow">Room Inspiration</span>
+            <h2 className="scrub-heading mt-5 font-display text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-4xl">
+              Let one styled room sell the mood, then let hotspots sell the pieces.
+            </h2>
+          </div>
+          <p className="scrub-copy max-w-lg text-base leading-7 text-soft-ink">
+            A premium inspiration scene works best when it feels editorial first,
+            but still gives visitors precise points of product discovery.
+          </p>
+        </div>
+
+        <div className="scrub-media glass-panel mt-10 overflow-hidden rounded-[40px] p-4 lg:p-6">
+          <div className="relative h-[34rem] overflow-hidden rounded-[32px]">
+            <Image
+              src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1600&q=80"
+              alt="Warm premium room inspiration interior"
+              fill
+              sizes="(min-width: 1024px) 84rem, 100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.16)_44%,rgba(0,0,0,0.28)_100%)]" />
+
+            {roomHotspots.map((hotspot) => (
+              <div
+                key={hotspot.name}
+                className="hotspot-anchor absolute"
+                style={{ top: hotspot.top, left: hotspot.left }}
+              >
+                <span className="hotspot-ring absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/55 bg-white/12" />
+                <button
+                  type="button"
+                  className="relative z-10 flex h-5 w-5 items-center justify-center rounded-full border border-white/60 bg-brand shadow-[0_12px_28px_rgba(201,133,67,0.35)]"
+                >
+                  <span className="h-2.5 w-2.5 rounded-full bg-white" />
+                </button>
+                <div className="mt-3 rounded-[22px] bg-white/78 px-4 py-3 text-sm shadow-[0_16px_34px_rgba(23,21,20,0.12)] backdrop-blur">
+                  <div className="font-semibold text-ink">{hotspot.name}</div>
+                  <div className="mt-1 text-soft-ink">{hotspot.price}</div>
+                </div>
+              </div>
+            ))}
+
+            <div className="absolute left-6 top-6 max-w-sm rounded-[28px] bg-white/16 px-5 py-5 text-white backdrop-blur">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/72">
+                Editor&apos;s Room
+              </div>
+              <h3 className="mt-3 font-display text-3xl font-semibold tracking-[-0.04em]">
+                Soft architecture, warm materials, and intentional negative space.
+              </h3>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="categories" className="scrub-section premium-glow section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <span className="eyebrow">Featured Categories</span>
@@ -699,15 +1001,15 @@ export function HomePage() {
           {featuredCategories.map((collection) => (
             <article
               key={collection.title}
-              className="category-panel group scrub-media glass-panel overflow-hidden rounded-[34px] lg:min-h-[34rem] lg:w-[34rem] lg:min-w-[34rem] lg:flex-none"
+              className="category-panel group scrub-media tilt-card glass-panel overflow-hidden rounded-[34px] lg:min-h-[34rem] lg:w-[34rem] lg:min-w-[34rem] lg:flex-none"
             >
-              <div className="relative h-80 overflow-hidden">
+              <div className="tilt-media relative h-80 overflow-hidden">
                 <Image
                   src={collection.image}
                   alt={collection.title}
                   fill
                   sizes="(min-width: 1024px) 30vw, 100vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="hover-pan object-cover transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_0%,rgba(0,0,0,0.12)_42%,rgba(0,0,0,0.42)_100%)]" />
               </div>
@@ -735,7 +1037,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="products" className="scrub-section section-shell py-14">
+      <section id="products" className="scrub-section premium-glow section-shell py-14">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <span className="eyebrow">Best Selling Products</span>
@@ -772,7 +1074,7 @@ export function HomePage() {
             return (
             <article
               key={product.id}
-              className={`product-card group relative overflow-hidden rounded-[32px] border border-white/70 bg-[rgba(255,250,244,0.82)] transition-all duration-300 ${
+              className={`product-card tilt-card group relative overflow-hidden rounded-[32px] border border-white/70 bg-[rgba(255,250,244,0.82)] transition-all duration-300 ${
                 isSpotlight
                   ? "scale-[1.02] shadow-[0_28px_70px_rgba(42,28,13,0.16)]"
                   : "shadow-[0_18px_42px_rgba(42,28,13,0.08)]"
@@ -783,13 +1085,13 @@ export function HomePage() {
               onFocus={() => setActiveProductId(product.id)}
               onBlur={() => setActiveProductId(null)}
             >
-              <div className="scrub-media relative h-72 overflow-hidden bg-[#f3eadf]">
+              <div className="scrub-media tilt-media relative h-72 overflow-hidden bg-[#f3eadf]">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
                   sizes="(min-width: 1280px) 22vw, (min-width: 768px) 46vw, 100vw"
-                  className={`object-cover transition-transform duration-700 ${
+                  className={`hover-pan object-cover transition-transform duration-700 ${
                     isSpotlight ? "scale-110" : "group-hover:scale-105"
                   }`}
                 />
@@ -868,7 +1170,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="shop" className="scrub-section section-shell py-14">
+      <section id="shop" className="scrub-section premium-glow section-shell py-14">
         <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
           <div
             className="scrub-media glass-panel overflow-hidden rounded-[36px] p-6"
@@ -879,7 +1181,7 @@ export function HomePage() {
                 alt="Premium interior lounge composition"
                 fill
                 sizes="(min-width: 1024px) 44vw, 100vw"
-                className="object-cover"
+                className="hover-pan object-cover"
               />
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.16)_48%,rgba(0,0,0,0.40)_100%)]" />
               <div className="absolute bottom-5 left-5 max-w-xs rounded-[28px] bg-white/18 p-5 backdrop-blur">
@@ -972,7 +1274,7 @@ export function HomePage() {
 
       <section
         id="contact"
-        className="section-shell pt-10"
+        className="premium-glow section-shell pt-10"
       >
         <div className="rounded-[40px] bg-ink px-7 py-10 text-white shadow-[0_32px_90px_rgba(23,21,20,0.18)] lg:px-12 lg:py-12">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
@@ -996,25 +1298,31 @@ export function HomePage() {
                   placeholder="Enter your email for early access"
                   className="h-14 flex-1 rounded-[20px] border border-white/10 bg-white/8 px-5 text-sm text-white outline-none placeholder:text-white/38"
                 />
-                <button className="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-brand px-6 text-sm font-semibold text-ink hover:bg-[#d99655]">
-                  Join newsletter
-                  <ArrowRight className="h-4 w-4" />
+                <button className="magnetic-btn inline-flex h-14 items-center justify-center rounded-[20px] bg-brand px-6 text-sm font-semibold text-ink hover:bg-[#d99655]">
+                  <span className="magnetic-inner inline-flex items-center gap-2">
+                    Join newsletter
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </button>
               </div>
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#categories"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-ink hover:-translate-y-1 hover:bg-[#d99655]"
+                  className="magnetic-btn inline-flex items-center rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-ink hover:-translate-y-1 hover:bg-[#d99655]"
                 >
-                  Browse categories
-                  <ArrowRight className="h-4 w-4" />
+                  <span className="magnetic-inner inline-flex items-center gap-2">
+                    Browse categories
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </a>
                 <a
                   href="#products"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/12 px-6 py-3.5 text-sm font-semibold text-white/82 hover:-translate-y-1 hover:bg-white/6"
+                  className="magnetic-btn inline-flex items-center rounded-full border border-white/12 px-6 py-3.5 text-sm font-semibold text-white/82 hover:-translate-y-1 hover:bg-white/6"
                 >
-                  Shop best sellers
-                  <ShoppingBag className="h-4 w-4" />
+                  <span className="magnetic-inner inline-flex items-center gap-2">
+                    Shop best sellers
+                    <ShoppingBag className="h-4 w-4" />
+                  </span>
                 </a>
               </div>
             </div>
